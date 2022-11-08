@@ -1,5 +1,5 @@
 import { AccountBookOutlined, CloudUploadOutlined, EyeInvisibleOutlined, EyeOutlined, FormOutlined, FallOutlined, RiseOutlined } from '@ant-design/icons';
-import { Button, Col, Empty, List, Row, Spin, Tabs, Tag } from 'antd';
+import { Button, Col, Empty, List, Row, Spin, Tabs, Tag, Space } from 'antd';
 import dayjs from 'dayjs';
 import React, { Component } from 'react';
 import AccountAmount from '../components/AccountAmount';
@@ -97,7 +97,7 @@ class Index extends Component {
 
   queryMonthStats = () => {
     this.setState({ loading: true })
-    fetch(`/api/auth/stats/total?year=${dayjs(this.state.selectedMonth).year()}&month=${dayjs(this.state.selectedMonth).month() + 1}`)
+    fetch(`/api/auth/stats/total?year=${dayjs(this.state.selectedMonth).year()}&month=${this.state.selectedMonth.length > 4 ? dayjs(this.state.selectedMonth).month() + 1 : ''}`)
       .then(res => {
         const { Income = 0, Expenses = 0, Liabilities = 0, Assets = 0 } = res;
         this.setState({ Income, Expenses, Liabilities, Assets })
@@ -107,7 +107,7 @@ class Index extends Component {
   queryTransactionList = () => {
     const { type, selectedMonth } = this.state
     this.setState({ listLoading: true })
-    fetch(`/api/auth/transaction?type=${type}&year=${dayjs(selectedMonth).year()}&month=${dayjs(selectedMonth).month() + 1}`)
+    fetch(`/api/auth/transaction?type=${type}&year=${dayjs(selectedMonth).year()}&month=${this.state.selectedMonth.length > 4 ? dayjs(selectedMonth).month() + 1 : ''}`)
       .then(transactionList => {
         const transactionDateGroup = {}
         transactionList.forEach(transaction => {
@@ -194,17 +194,16 @@ class Index extends Component {
     return (
       <div className="index-page page">
         <div className="top-wrapper">
-          <div>
+          <Space size={5} wrap>
             <MonthSelector value={this.state.selectedMonth} onChange={this.handleChangeMonth} />
-            &nbsp;&nbsp;{hideMoney ? <Button size="small" icon={<EyeInvisibleOutlined />} onClick={this.handleHideMoney}></Button> : <Button size="small" icon={<EyeOutlined />} onClick={this.handleHideMoney}></Button>}
-          </div>
-          <div>
+            {hideMoney ? <Button size="small" icon={<EyeInvisibleOutlined />} onClick={this.handleHideMoney}></Button> : <Button size="small" icon={<EyeOutlined />} onClick={this.handleHideMoney}></Button>}
+            <Button size="small" icon={<AccountBookOutlined />} onClick={this.handleOpenCalendarDrawer}>日历</Button>
+            <Button size="small" icon={<CloudUploadOutlined />} onClick={this.handleNavigateImportPage}>导入</Button>
+            <Button type="primary" size="small" icon={<FormOutlined />} onClick={this.handleOpenDrawer}>记账</Button>
             {this.state.Assets > 0 && !hideMoney && <Tag icon={<RiseOutlined />} color="#f50" >月资产：{AccountAmount('Assets:', this.state.Assets)}</Tag>}
             {this.state.Assets < 0 && !hideMoney && <Tag icon={<FallOutlined />} color="#1DA57A">月资产：{AccountAmount('Assets:', this.state.Assets)}</Tag>}
-            <Button size="small" icon={<AccountBookOutlined />} onClick={this.handleOpenCalendarDrawer}>日历</Button>&nbsp;&nbsp;
-            <Button size="small" icon={<CloudUploadOutlined />} onClick={this.handleNavigateImportPage}>导入</Button>&nbsp;&nbsp;
-            <Button type="primary" size="small" icon={<FormOutlined />} onClick={this.handleOpenDrawer}>记账</Button>
-          </div>
+          </Space>
+
         </div>
         <div style={{ textAlign: 'center' }}>
           <Row>

@@ -1,11 +1,12 @@
 import { FormOutlined, Loading3QuartersOutlined, LoadingOutlined, PlusOutlined, SettingOutlined, SlidersOutlined, UploadOutlined } from '@ant-design/icons';
-import { Alert, Button, Collapse, Drawer, Form, Input, List, message, Select, Tabs, Tag, Upload } from 'antd';
+import { Alert, Button, Collapse, Drawer, Form, Input, List, message, Select, Tabs, Tag, Upload, Avatar } from 'antd';
 import dayjs from 'dayjs';
 import Decimal from 'decimal.js';
 import React, { Component } from 'react';
 import { Fragment } from 'react/cjs/react.production.min';
 import AccountAmount from '../components/AccountAmount';
 import AccountIcon from '../components/AccountIcon';
+import Icons from '../components/Icons';
 import AccountSyncPriceDrawer from '../components/AccountSyncPriceDrawer';
 import AccountTransactionDrawer from '../components/AccountTransactionDrawer';
 import CommodityPriceChartDrawer from '../components/CommodityPriceChartDrawer';
@@ -81,14 +82,18 @@ class Account extends Component {
 
   state = {
     loading: false,
+    iconsLoading: false,
     drawerVisible: false,
     balanceDrawerVisible: false,
     accountDrawerVisible: false,
     accounts: [],
+    icons: [],
     fetchAccountTypeloading: false,
     accountTypes: [],
     selectedAccountType: '',
     iconType: '',
+    iconsShow: false,
+    choiceIcon: '',
     selectedAccountTypePrefix: 'Assets',
     balanceAccount: null,
     editAccount: {},
@@ -104,6 +109,21 @@ class Account extends Component {
   componentDidMount() {
     this.queryAllAccounts()
     this.queryAllAccountTypes()
+  }
+
+
+  queryAllIcon = () => {
+    if (this.state.iconsLoading) {
+      return
+    }
+    if (this.state.icons.length>0){
+      return 
+    }
+    this.setState({ iconsLoading: true })
+    fetch('/api/auth/icons/list')
+      .then(icons => {
+        this.setState({ icons })
+      }).catch(console.error).finally(() => { this.setState({ iconsLoading: false }) })
   }
 
   queryAllAccounts = () => {
@@ -132,7 +152,7 @@ class Account extends Component {
 
   handleAddAccount = (values) => {
     this.setState({ loading: true })
-    const { account, date, accountType, accountTypeName, currency } = values
+    const { account, date, accountType, accountTypeName, currency, icon } = values
     if (this.state.selectedAccountType === 'Undefined') {
       const type = `${this.state.selectedAccountTypePrefix}:${accountType}`
       fetch('/api/auth/account/type', { method: 'POST', body: { type, name: accountTypeName } })
@@ -144,7 +164,7 @@ class Account extends Component {
         }).catch(console.error).finally(() => { this.setState({ loading: false }) })
     } else {
       const acc = `${this.state.selectedAccountType}:${account}`
-      fetch('/api/auth/account', { method: 'POST', body: { account: acc, date, currency } })
+      fetch('/api/auth/account', { method: 'POST', body: { account: acc, date, currency, icon } })
         .then(result => {
           this.setState({ drawerVisible: false, accounts: [result, ...this.state.accounts] });
           // 清空表单内容
@@ -191,8 +211,19 @@ class Account extends Component {
     const account = `${this.state.selectedAccountType}:${value.target.value}`
     this.setState({ iconType: getAccountIcon(account) })
   }
+  handleIconClick=()=>{
+    this.setState({iconsShow: !this.state.iconsShow})
+  }
+
+  handleEditIcon = (value) => {
+    this.setState({ choiceIcon: value,iconsShow: false }, () => {
+      this.formRef.current.setFieldsValue({ icon: value })
+      console.log(this.formRef.current.getFieldsValue())
+    })
+  }
 
   handleOpenDrawer = () => {
+    this.queryAllIcon()
     this.setState({ drawerVisible: true }, () => {
       this.formRef.current.setFieldsValue({ date: dayjs().format('YYYY-MM-DD') })
     })
@@ -260,6 +291,7 @@ class Account extends Component {
         message.success("缓存已更新");
         this.queryAllAccounts()
         this.queryAllAccountTypes()
+        this.setState({ icons: [] })
       })
       .finally(() => { this.setState({ refreshLoading: false }) })
   }
@@ -371,10 +403,20 @@ class Account extends Component {
                 >
                   <Input
                     placeholder="账户名称，如 ICBC:工商银行"
-                    addonAfter={<AccountIcon iconType={getAccountIcon(iconType)} />}
+                    addonAfter={<Form.Item name="icon" noStyle><AccountIcon icons={this.state.icons} iconType={this.state.choiceIcon ? this.state.choiceIcon : getAccountIcon(iconType)} 
+                        onClick={this.handleIconClick}
+                        /></Form.Item>}
                     onChange={this.handleEditAccountInput}
                   />
                 </Form.Item>
+            }
+            {
+              <Form.Item
+              visible={this.state.iconsShow}
+              style={{display: this.state.iconsShow?'block':'none'}}
+            >
+                  <Icons icons={this.state.icons} onChange={this.handleEditIcon} />
+              </Form.Item>
             }
             {
               selectedAccountType !== 'Undefined' &&

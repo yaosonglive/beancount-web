@@ -332,7 +332,7 @@ class Account extends Component {
           placement="bottom"
           closable={true}
           onClose={this.handleCloseDrawer}
-          visible={drawerVisible}
+          open={drawerVisible}
           height="540"
           className="page-drawer"
           bodyStyle={{ display: 'flex', justifyContent: 'center' }}
@@ -461,7 +461,7 @@ class Account extends Component {
             placement="bottom"
             closable={true}
             onClose={this.handleCloseBalanceDrawer}
-            visible={balanceDrawerVisible}
+            open={balanceDrawerVisible}
             className="page-drawer"
             height="60vh"
             bodyStyle={{ display: 'flex', justifyContent: 'center' }}
@@ -496,7 +496,7 @@ class Account extends Component {
             placement="bottom"
             closable={true}
             onClose={this.handleCloseAccountDrawer}
-            visible={accountDrawerVisible}
+            open={accountDrawerVisible}
             className="page-drawer"
             height="60vh"
             bodyStyle={{ display: 'flex', justifyContent: 'center' }}
@@ -537,16 +537,16 @@ class Account extends Component {
         </div>
         <AccountTransactionDrawer
           account={this.state.editAccount.account}
-          visible={transactionDrawerVisible}
+          open={transactionDrawerVisible}
           onClose={this.handleCloseTransactionDrawer}
         />
         <AccountSyncPriceDrawer
           account={this.state.editAccount}
-          visible={syncPriceDrawerVisible}
+          open={syncPriceDrawerVisible}
           onClose={this.handleCloseSyncPriceDrawer}
         />
         <CommodityPriceChartDrawer
-          visible={this.state.commodityPriceDrawerVisible}
+          open={this.state.commodityPriceDrawerVisible}
           onClose={this.handleCloseCommodityPriceDrawer}
         />
       </div >

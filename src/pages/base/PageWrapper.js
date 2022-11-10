@@ -82,9 +82,9 @@ class PageWrapper extends Component {
               <a href={Config.issue} target="_blank">反馈BUG</a>&nbsp;&nbsp;
             </div>
           </footer>
-          <Modal width={860} visible={this.state.isModalVisible} onOk={this.closeErrorModal} onCancel={this.closeErrorModal}>
+          <Modal width={860} open={this.state.isModalVisible} onOk={this.closeErrorModal} onCancel={this.closeErrorModal}>
             <pre>
-              {this.state.error.map(e => <p>{e}</p>)}
+              {this.state.error.map((e,i) => <p key={i}>{e}</p>)}
             </pre>
           </Modal>
         </div>

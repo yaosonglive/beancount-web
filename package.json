@@ -7,7 +7,7 @@
   "dependencies": {
     "@craco/craco": "^6.2.0",
     "antd": "^4.20.7",
-    "bizcharts": "^4.1.11",
+    "bizcharts": "^4.1.21",
     "craco-less": "^1.18.0",
     "dayjs": "^1.10.6",
     "decimal.js": "^10.3.1",

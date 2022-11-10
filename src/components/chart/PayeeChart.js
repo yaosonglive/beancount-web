@@ -1,5 +1,5 @@
 import { Input, Select, Spin } from 'antd';
-import { Chart, Coordinate, Interaction, Interval } from "bizcharts";
+import { Chart, Coordinate, Interaction, Interval,Tooltip } from "bizcharts";
 import React, { Component } from "react";
 import { fetch } from '../../config/Util';
 import MonthSelector from '../MonthSelector';
@@ -113,6 +113,8 @@ class PayeeChart extends Component {
               ]}
             />
             <Interaction type="active-region" />
+            
+            <Tooltip shared/>
           </Chart>
         </Spin>
       </div>

@@ -15,7 +15,6 @@ import ThemeContext from '../context/ThemeContext';
 import Page from './base/Page';
 import './styles/Index.css';
 
-const TabPane = Tabs.TabPane
 
 const TransactionList = ({ loading, transactionGroups, type, onOpenAccountDrawer, onOpenTagDrawer }) => (
   <div style={{ minHeight: '400px' }}>
@@ -191,6 +190,32 @@ class Index extends Component {
 
     const { loading, listLoading, transactionDateGroup, addTransactionDrawerVisible, hideMoney, accountTransactionDrawerVisible, tagTransactionDrawerVisible } = this.state
     const transactionGroups = Object.values(transactionDateGroup);
+    const items = [
+      { label: '收入明细', key: 'Income', 
+        children: (<TransactionList
+          type={'Income'}
+          loading={listLoading}
+          transactionGroups={transactionGroups}
+          onOpenAccountDrawer={this.handleOpenAccountTransactionDrawer}
+          onOpenTagDrawer={this.handleOpenTagTransactionDrawer}
+        />)
+      },
+      { label: '支出明细', key: 'Expenses', children: (<TransactionList
+        type={'Expenses'}
+        loading={listLoading}
+        transactionGroups={transactionGroups}
+        onOpenAccountDrawer={this.handleOpenAccountTransactionDrawer}
+        onOpenTagDrawer={this.handleOpenTagTransactionDrawer}
+      />) },
+      { label: '负债明细', key: 'Liabilities', children: (<TransactionList
+        type={'Liabilities'}
+        loading={listLoading}
+        transactionGroups={transactionGroups}
+        onOpenAccountDrawer={this.handleOpenAccountTransactionDrawer}
+        onOpenTagDrawer={this.handleOpenTagTransactionDrawer}
+      />) },
+    ];
+    
     return (
       <div className="index-page page">
         <div className="top-wrapper">
@@ -218,38 +243,11 @@ class Index extends Component {
             </Col>
           </Row>
         </div>
-        <Tabs centered defaultActiveKey="Expenses" onChange={this.handleChangeEntryType} style={{ marginTop: '1rem' }}>
-          <TabPane tab="收入明细" key="Income">
-            <TransactionList
-              type={'Income'}
-              loading={listLoading}
-              transactionGroups={transactionGroups}
-              onOpenAccountDrawer={this.handleOpenAccountTransactionDrawer}
-              onOpenTagDrawer={this.handleOpenTagTransactionDrawer}
-            />
-          </TabPane>
-          <TabPane tab="支出明细" key="Expenses">
-            <TransactionList
-              type={'Expenses'}
-              loading={listLoading}
-              transactionGroups={transactionGroups}
-              onOpenAccountDrawer={this.handleOpenAccountTransactionDrawer}
-              onOpenTagDrawer={this.handleOpenTagTransactionDrawer}
-            />
-          </TabPane>
-          <TabPane tab="负债明细" key="Liabilities">
-            <TransactionList
-              type={'Liabilities'}
-              loading={listLoading}
-              transactionGroups={transactionGroups}
-              onOpenAccountDrawer={this.handleOpenAccountTransactionDrawer}
-              onOpenTagDrawer={this.handleOpenTagTransactionDrawer}
-            />
-          </TabPane>
-        </Tabs>
+        <Tabs items={items} defaultActiveKey="Expenses" onChange={this.handleChangeEntryType} style={{ marginTop: '1rem' }}/>
+
         <AddTransactionDrawer
           {...this.props}
-          visible={addTransactionDrawerVisible}
+          open={addTransactionDrawerVisible}
           onClose={this.handleCloseDrawer}
           onSubmit={this.handleAddTransaction}
         />
@@ -257,7 +255,7 @@ class Index extends Component {
           this.state.selectedAccount &&
           <AccountTransactionDrawer
             account={this.state.selectedAccount}
-            visible={accountTransactionDrawerVisible}
+            open={accountTransactionDrawerVisible}
             onClose={this.handleCloseAccountTransactionDrawer}
           />
         }
@@ -265,7 +263,7 @@ class Index extends Component {
           this.state.selectedTag &&
           <TagTransactionDrawer
             tag={this.state.selectedTag}
-            visible={tagTransactionDrawerVisible}
+            open={tagTransactionDrawerVisible}
             onClose={this.handleCloseTagTransactionDrawer}
           />
         }
@@ -273,7 +271,7 @@ class Index extends Component {
           this.state.selectedMonth &&
           <CalendarDrawer
             month={this.state.selectedMonth}
-            visible={this.state.calendarDrawerVisible}
+            open={this.state.calendarDrawerVisible}
             onClose={this.handleCloseCalendarDrawer}
           />
         }

@@ -85,7 +85,7 @@ class AccountDayTrendChart extends Component {
         <Spin spinning={this.state.loading}>
           <Chart height={480} autoFit data={this.state.dayAmountData} interactions={['active-region']} padding={[30, 30, 30, 50]} >
             <Interval position="date*amount" />
-            <Tooltip>
+            <Tooltip shared>
               {(title, items) => {
                 return <div style={{ padding: '.8rem 1rem' }}>{title}: {items[0].data.amount}元</div>
               }}
